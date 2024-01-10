@@ -87,6 +87,12 @@ void Game::Update(float dt)
     Ball->Move(dt, this->Width);
     // check for collisions
     this->DoCollisions();
+
+    if (Ball->Position.y >= this->Height) // did ball reach bottom edge?
+    {
+        this->ResetLevel();
+        this->ResetPlayer();
+    }
 }
 
 void Game::ProcessInput(float dt)
@@ -157,6 +163,26 @@ Direction VectorDirection(glm::vec2 target)
     return (Direction)best_match;
 }
 
+void Game::ResetLevel()
+{
+    if (this->Level == 0)
+        this->Levels[0].Load("C:/cz/BO/BreakOutGame/BreakOutGame/src/levels/one.lvl", this->Width, this->Height / 2);
+    else if (this->Level == 1)
+        this->Levels[1].Load("C:/cz/BO/BreakOutGame/BreakOutGame/src/levels/two.lvl", this->Width, this->Height / 2);
+    else if (this->Level == 2)
+        this->Levels[2].Load("C:/cz/BO/BreakOutGame/BreakOutGame/src/levels/three.lvl", this->Width, this->Height / 2);
+    else if (this->Level == 3)
+        this->Levels[3].Load("C:/cz/BO/BreakOutGame/BreakOutGame/src/levels/four.lvl", this->Width, this->Height / 2);
+}
+
+void Game::ResetPlayer()
+{
+    // reset player/ball stats
+    Player->Size = PLAYER_SIZE;
+    Player->Position = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
+    Ball->Reset(Player->Position + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -(BALL_RADIUS * 2.0f)), INITIAL_BALL_VELOCITY);
+}
+
 Collision CheckCollision(BallObject& one, GameObject& two) // AABB - Circle collision
 {
     // get center point circle first 
@@ -217,5 +243,21 @@ void Game::DoCollisions()
                 }
             }
         }
+    }
+
+    // player - ball collision
+    Collision result = CheckCollision(*Ball, *Player);
+    if (!Ball->Stuck && std::get<0>(result))
+    {
+        // check where it hit the board, and change velocity based on where it hit the board
+        float centerBoard = Player->Position.x + Player->Size.x / 2.0f;
+        float distance = (Ball->Position.x + Ball->Radius) - centerBoard;
+        float percentage = distance / (Player->Size.x / 2.0f);
+        // then move accordingly
+        float strength = 2.0f;
+        glm::vec2 oldVelocity = Ball->Velocity;
+        Ball->Velocity.x = INITIAL_BALL_VELOCITY.x * percentage * strength;
+        Ball->Velocity.y = -1.0f * abs(Ball->Velocity.y);
+        Ball->Velocity = glm::normalize(Ball->Velocity) * glm::length(oldVelocity);
     }
 }
