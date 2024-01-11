@@ -25,6 +25,7 @@
     <ClCompile Include="src\game_level.cpp" />
     <ClCompile Include="src\game_object.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\particle_generator.cpp" />
     <ClCompile Include="src\program.cpp" />
     <ClCompile Include="src\resource_manager.cpp" />
     <ClCompile Include="src\shader.cpp" />
@@ -326,6 +327,7 @@
     <ClInclude Include="src\game.h" />
     <ClInclude Include="src\game_level.h" />
     <ClInclude Include="src\game_object.h" />
+    <ClInclude Include="src\particle_generator.h" />
     <ClInclude Include="src\resource_manager.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\sprite_renderer.h" />
@@ -473,6 +475,8 @@
     <None Include="src\levels\one.lvl" />
     <None Include="src\levels\three.lvl" />
     <None Include="src\levels\two.lvl" />
+    <None Include="src\shaders\particle.frag" />
+    <None Include="src\shaders\particle.vs" />
     <None Include="src\shaders\FragmentShader.fs" />
     <None Include="src\shaders\sprite.frag" />
     <None Include="src\shaders\sprite.vs" />
@@ -484,6 +488,7 @@
     <Image Include="src\textures\block.png" />
     <Image Include="src\textures\block_solid.png" />
     <Image Include="src\textures\paddle.png" />
+    <Image Include="src\textures\particle.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
