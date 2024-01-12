@@ -11,17 +11,19 @@
 #include "sprite_renderer.h"
 #include "ball_object.h"
 #include "particle_generator.h"
+#include "post_processor.h"
 
 
 // Game-related State data
 SpriteRenderer  *Renderer;
 GameObject* Player;
+PostProcessor* Effects;
 
 // Initial velocity of the Ball
 const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
 // Radius of the ball object
 const float BALL_RADIUS = 12.5f;
-
+float ShakeTime = 0.0f;
 BallObject* Ball;
 
 Game::Game(unsigned int width, unsigned int height) 
@@ -44,13 +46,14 @@ void Game::Init()
     // load shaders
     ResourceManager::LoadShader("C:/cz/BO/BreakOutGame/BreakOutGame/src/shaders/sprite.vs", "C:/cz/BO/BreakOutGame/BreakOutGame/src/shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("C:/cz/BO/BreakOutGame/BreakOutGame/src/shaders/particle.vs", "C:/cz/BO/BreakOutGame/BreakOutGame/src/shaders/particle.frag", nullptr, "particle");
+    ResourceManager::LoadShader("C:/cz/BO/BreakOutGame/BreakOutGame/src/shaders/post_processing.vs", "C:/cz/BO/BreakOutGame/BreakOutGame/src/shaders/post_processing.frag", nullptr, "postprocessing");
+
 
     // configure shaders
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width), 
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-
     ResourceManager::GetShader("particle").Use().SetMatrix4("projection", projection);
 
     // set render-specific controls
@@ -96,6 +99,8 @@ void Game::Init()
         500
     );
 
+    Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
+
 }
 
 void Game::Update(float dt)
@@ -112,6 +117,12 @@ void Game::Update(float dt)
     {
         this->ResetLevel();
         this->ResetPlayer();
+    }
+    if (ShakeTime > 0.0f)
+    {
+        ShakeTime -= dt;
+        if (ShakeTime <= 0.0f)
+            Effects->Shake = false;
     }
 }
 
@@ -146,10 +157,12 @@ void Game::ProcessInput(float dt)
 
 void Game::Render()
 {
+
     Texture2D backgroundText = ResourceManager::GetTexture("background");
 
     if (this->State == GAME_ACTIVE)
     {
+        Effects->BeginRender();
         // draw background
         Renderer->DrawSprite(backgroundText,
             glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f
@@ -165,6 +178,8 @@ void Game::Render()
 
         // draw ball
         Ball->Draw(*Renderer);
+        Effects->EndRender();
+        Effects->Render(glfwGetTime());
     }
 }
 
@@ -245,6 +260,10 @@ void Game::DoCollisions()
                 // destroy block if not solid
                 if (!box.IsSolid)
                     box.Destroyed = true;
+                else {
+                    ShakeTime = 0.05f;
+                    Effects->Shake = true;
+                }
                 // collision resolution
                 Direction dir = std::get<1>(collision);
                 glm::vec2 diff_vector = std::get<2>(collision);
