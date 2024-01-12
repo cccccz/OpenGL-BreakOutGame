@@ -330,6 +330,7 @@
     <ClInclude Include="src\game_object.h" />
     <ClInclude Include="src\particle_generator.h" />
     <ClInclude Include="src\post_processor.h" />
+    <ClInclude Include="src\power_up.h" />
     <ClInclude Include="src\resource_manager.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\sprite_renderer.h" />

@@ -953,6 +953,9 @@
     <ClInclude Include="src\post_processor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\power_up.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\glm\detail\func_common.inl">
