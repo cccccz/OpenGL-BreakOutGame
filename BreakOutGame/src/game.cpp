@@ -12,12 +12,16 @@
 #include "ball_object.h"
 #include "particle_generator.h"
 #include "post_processor.h"
+#include <irrklang/irrKlang.h>
 
 
 // Game-related State data
 SpriteRenderer  *Renderer;
 GameObject* Player;
 PostProcessor* Effects;
+
+using namespace irrklang;
+ISoundEngine* SoundEngine = createIrrKlangDevice();
 
 // Initial velocity of the Ball
 const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
@@ -102,6 +106,10 @@ void Game::Init()
     Particles = new ParticleGenerator(ResourceManager::GetShader("particle"),ResourceManager::GetTexture("particle"),500);
 
     Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
+
+    SoundEngine->setSoundVolume(0.25f);
+    SoundEngine->play2D("C:/cz/BO/BreakOutGame/BreakOutGame/src/audio/breakout.mp3", true);
+
 
 }
 
@@ -317,11 +325,14 @@ void Game::DoCollisions()
                 if (!(Ball->PassThrough && !box.IsSolid)) {
                     box.Destroyed = true;
                     this->SpawnPowerUps(box);
+                    SoundEngine->play2D("C:/cz/BO/BreakOutGame/BreakOutGame/src/audio/bleep.mp3", false);
                 }
 
                 else {
                     ShakeTime = 0.05f;
                     Effects->Shake = true;
+                    SoundEngine->play2D("C:/cz/BO/BreakOutGame/BreakOutGame/src/audio/bleep.mp3", false);
+
                 }
                 // collision resolution
 
@@ -365,6 +376,9 @@ void Game::DoCollisions()
         Ball->Velocity.y = -1.0f * abs(Ball->Velocity.y);
         Ball->Velocity = glm::normalize(Ball->Velocity) * glm::length(oldVelocity);
         Ball->Stuck = Ball->Sticky;
+        SoundEngine->play2D("C:/cz/BO/BreakOutGame/BreakOutGame/src/audio/bleep.wav", false);
+
+        
     }
 
     for (PowerUp& powerUp : this->PowerUps)
@@ -378,6 +392,8 @@ void Game::DoCollisions()
                 ActivatePowerUp(powerUp);
                 powerUp.Destroyed = true;
                 powerUp.Activated = true;
+                SoundEngine->play2D("C:/cz/BO/BreakOutGame/BreakOutGame/src/audio/powerup.wav", false);
+
             }
         }
     }

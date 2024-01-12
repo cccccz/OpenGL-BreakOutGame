@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />
+    <Library Include="lib\irrKlang.lib" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\glad\glad.h" />
@@ -323,6 +324,27 @@
     <ClInclude Include="include\glm\vec3.hpp" />
     <ClInclude Include="include\glm\vec4.hpp" />
     <ClInclude Include="include\glm\vector_relational.hpp" />
+    <ClInclude Include="include\irrklang\ik_ESoundEngineOptions.h" />
+    <ClInclude Include="include\irrklang\ik_ESoundOutputDrivers.h" />
+    <ClInclude Include="include\irrklang\ik_EStreamModes.h" />
+    <ClInclude Include="include\irrklang\ik_IAudioRecorder.h" />
+    <ClInclude Include="include\irrklang\ik_IAudioStream.h" />
+    <ClInclude Include="include\irrklang\ik_IAudioStreamLoader.h" />
+    <ClInclude Include="include\irrklang\ik_IFileFactory.h" />
+    <ClInclude Include="include\irrklang\ik_IFileReader.h" />
+    <ClInclude Include="include\irrklang\ik_IRefCounted.h" />
+    <ClInclude Include="include\irrklang\ik_irrKlangTypes.h" />
+    <ClInclude Include="include\irrklang\ik_ISound.h" />
+    <ClInclude Include="include\irrklang\ik_ISoundDeviceList.h" />
+    <ClInclude Include="include\irrklang\ik_ISoundEffectControl.h" />
+    <ClInclude Include="include\irrklang\ik_ISoundEngine.h" />
+    <ClInclude Include="include\irrklang\ik_ISoundMixedOutputReceiver.h" />
+    <ClInclude Include="include\irrklang\ik_ISoundSource.h" />
+    <ClInclude Include="include\irrklang\ik_ISoundStopEventReceiver.h" />
+    <ClInclude Include="include\irrklang\ik_IVirtualRefCounted.h" />
+    <ClInclude Include="include\irrklang\ik_SAudioStreamFormat.h" />
+    <ClInclude Include="include\irrklang\ik_vec3d.h" />
+    <ClInclude Include="include\irrklang\irrKlang.h" />
     <ClInclude Include="include\KHR\khrplatform.h" />
     <ClInclude Include="src\ball_object.h" />
     <ClInclude Include="src\game.h" />
@@ -494,6 +516,13 @@
     <Image Include="src\textures\block_solid.png" />
     <Image Include="src\textures\paddle.png" />
     <Image Include="src\textures\particle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="src\audio\bleep.mp3" />
+    <Media Include="src\audio\bleep.wav" />
+    <Media Include="src\audio\breakout.mp3" />
+    <Media Include="src\audio\powerup.wav" />
+    <Media Include="src\audio\solid.wav" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
