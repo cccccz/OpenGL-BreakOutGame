@@ -13,6 +13,8 @@
 #include "particle_generator.h"
 #include "post_processor.h"
 #include <irrklang/irrKlang.h>
+#include "text_renderer.h"
+#include <sstream>
 
 
 // Game-related State data
@@ -31,7 +33,7 @@ float ShakeTime = 0.0f;
 BallObject* Ball;
 
 Game::Game(unsigned int width, unsigned int height) 
-    : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
+    : State(GAME_ACTIVE), Keys(), Width(width), Height(height), Level(0), Lives(3)
 { 
 
 }
@@ -43,6 +45,7 @@ Game::~Game()
 }
 
 ParticleGenerator* Particles;
+TextRenderer* Text;
 
 void Game::Init()
 {
@@ -93,8 +96,6 @@ void Game::Init()
     this->Levels.push_back(three);
     this->Levels.push_back(four);
 
-    //initial level
-    this->Level = 0;
 
     glm::vec2 playerPos = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
     Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
@@ -110,6 +111,9 @@ void Game::Init()
     SoundEngine->setSoundVolume(0.25f);
     SoundEngine->play2D("C:/cz/BO/BreakOutGame/BreakOutGame/src/audio/breakout.mp3", true);
 
+    Text = new TextRenderer(this->Width, this->Height);
+    Text->Load("C:/cz/BO/BreakOutGame/BreakOutGame/src/fonts/ocraext.TTF", 24);
+
 
 }
 
@@ -124,21 +128,59 @@ void Game::Update(float dt)
     Particles->Update(dt, *Ball, 2, glm::vec2(Ball->Radius / 2.0f));
     this->UpdatePowerUps(dt);
 
-    if (Ball->Position.y >= this->Height) // did ball reach bottom edge?
-    {
-        this->ResetLevel();
-        this->ResetPlayer();
-    }
     if (ShakeTime > 0.0f)
     {
         ShakeTime -= dt;
         if (ShakeTime <= 0.0f)
             Effects->Shake = false;
     }
+
+    if (Ball->Position.y >= this->Height) // did ball reach bottom edge?
+    {
+        --this->Lives;
+        if (this->Lives == 0) {
+            this->ResetLevel();
+            this->State = GAME_MENU;
+        }
+        this->ResetPlayer();
+
+    }
+
 }
 
 void Game::ProcessInput(float dt)
 {
+    if (this->State == GAME_MENU)
+    {
+        if (this->Keys[GLFW_KEY_ENTER] && !this->KeysProcessed[GLFW_KEY_ENTER])
+        {
+            this->State = GAME_ACTIVE;
+            this->KeysProcessed[GLFW_KEY_ENTER] = true;
+        }
+        if (this->Keys[GLFW_KEY_W] && !this->KeysProcessed[GLFW_KEY_W])
+        {
+            this->Level = (this->Level + 1) % 4;
+            this->KeysProcessed[GLFW_KEY_W] = true;
+        }
+        if (this->Keys[GLFW_KEY_S] && !this->KeysProcessed[GLFW_KEY_S])
+        {
+            if (this->Level > 0)
+                --this->Level;
+            else
+                this->Level = 3;
+            //this->Level = (this->Level - 1) % 4;
+            this->KeysProcessed[GLFW_KEY_S] = true;
+        }
+    }
+    if (this->State == GAME_WIN)
+    {
+        if (this->Keys[GLFW_KEY_ENTER])
+        {
+            this->KeysProcessed[GLFW_KEY_ENTER] = true;
+            Effects->Chaos = false;
+            this->State = GAME_MENU;
+        }
+    }
     if (this->State == GAME_ACTIVE)
     {
         float velocity = PLAYER_VELOCITY * dt;
@@ -168,10 +210,11 @@ void Game::ProcessInput(float dt)
 
 void Game::Render()
 {
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     Texture2D backgroundText = ResourceManager::GetTexture("background");
 
-    if (this->State == GAME_ACTIVE)
+    if (this->State == GAME_ACTIVE || this->State == GAME_MENU)
     {
         Effects->BeginRender();
         // draw background
@@ -195,6 +238,14 @@ void Game::Render()
         Ball->Draw(*Renderer);
         Effects->EndRender();
         Effects->Render(glfwGetTime());
+        std::stringstream ss; ss << this->Lives;
+        Text->RenderText("Lives:" + ss.str(), 5.0f, 5.0f, 1.0f);
+    }
+
+    if (this->State == GAME_MENU)
+    {
+        Text->RenderText("Press ENTER to start", 250.0f, Height / 2, 1.0f);
+        Text->RenderText("Press W or S to select level", 245.0f, Height / 2 + 20.0f, 0.75f);
     }
 }
 
@@ -230,6 +281,7 @@ void Game::ResetLevel()
         this->Levels[2].Load("C:/cz/BO/BreakOutGame/BreakOutGame/src/levels/three.lvl", this->Width, this->Height / 2);
     else if (this->Level == 3)
         this->Levels[3].Load("C:/cz/BO/BreakOutGame/BreakOutGame/src/levels/four.lvl", this->Width, this->Height / 2);
+    this->Lives = 3;
 }
 
 void Game::ResetPlayer()

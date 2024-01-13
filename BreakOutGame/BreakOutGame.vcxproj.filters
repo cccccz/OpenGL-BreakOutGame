@@ -57,10 +57,14 @@
     <ClCompile Include="src\post_processor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\text_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\glfw3.lib" />
     <Library Include="lib\irrKlang.lib" />
+    <Library Include="lib\freetype.lib" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\game.h">
@@ -1020,6 +1024,12 @@
     <ClInclude Include="include\irrklang\irrKlang.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\ft2build.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\text_renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\glm\detail\func_common.inl">
@@ -1442,6 +1452,8 @@
     <None Include="src\shaders\particle.frag" />
     <None Include="src\shaders\post_processing.frag" />
     <None Include="src\shaders\post_processing.vs" />
+    <None Include="src\shaders\text_2d.fs" />
+    <None Include="src\shaders\text_2d.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="src\textures\awesomeface.png">
