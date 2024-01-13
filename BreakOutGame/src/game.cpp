@@ -145,6 +145,13 @@ void Game::Update(float dt)
         this->ResetPlayer();
 
     }
+    if (this->State == GAME_ACTIVE && this->Levels[this->Level].IsCompleted())
+    {
+        this->ResetLevel();
+        this->ResetPlayer();
+        Effects->Chaos = true;
+        this->State = GAME_WIN;
+    }
 
 }
 
@@ -206,6 +213,8 @@ void Game::ProcessInput(float dt)
         if (this->Keys[GLFW_KEY_SPACE])
             Ball->Stuck = false;
     }
+
+
 }
 
 void Game::Render()
@@ -246,6 +255,15 @@ void Game::Render()
     {
         Text->RenderText("Press ENTER to start", 250.0f, Height / 2, 1.0f);
         Text->RenderText("Press W or S to select level", 245.0f, Height / 2 + 20.0f, 0.75f);
+    }
+    if (this->State == GAME_WIN)
+    {
+        Text->RenderText(
+            "You WON!!!", 320.0, Height / 2 - 20.0, 1.0, glm::vec3(0.0, 1.0, 0.0)
+        );
+        Text->RenderText(
+            "Press ENTER to retry or ESC to quit", 130.0, Height / 2, 1.0, glm::vec3(1.0, 1.0, 0.0)
+        );
     }
 }
 
